@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Particle Counter ROI Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Add CSS styles for layout */
+        .calculator-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .column {
+            flex: 1;
+            padding: 10px;
+        }
+
+        /* Style the ROI result in green */
+        #ROI {
+            color: green;
+        }
+
+        /* Style labels and input fields */
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input {
+            width: 70%;
+            padding: 3px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+        }
+
+        /* Style for the pie chart container */
+        #pieChartContainer {
+            width: 300px;
+            height: 300px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Phizzle's Digital Air Series Operating Cost and ROI Calculator</h1>
+
+    <h3> Annual Operating Cost </h3>
+
+    <div class="calculator-container">
+        <div class="column">
+            <label for="counter">Select an Air Particle Counter:</label>
+            <select id="counter">
+                <option value="Climet 570">Climet 570</option>
+                <option value="Climet 1070">Climet 1070</option>
+                <option value="Flowstar 5000">Flowstar 5000</option>
+                <option value="Aerotrak">Aerotrak</option>
+                <option value="Lassair III">Lassair III</option>
+            </select>
+            <label for="usecase">Select a Use-case:</label>
+            <select id="usecase">
+                <option value="Good Lab Practices">Good Lab Practices</option>
+                <option value="Good Manufacturing Practices">Good Manufacturing Practices</option>
+                <option value="Clean-room ISO Grade 5">Clean-room ISO Grade 5</option>
+                <option value="Clean-room ISO Grade 6">Clean-room ISO Grade 6</option>
+                <option value="Clean-Room ISO Grade 8">Clean-Room ISO Grade 8</option>
+            </select>
+            <label for="quantity">Total Number of APCs:</label>
+            <input type="number" id="quantity" min="1" value="1">
+            <label for="numberofseparatecleanrooms">Enter the Number of Separate Facilities:</label>
+            <input type="number" id="numberofseparatecleanrooms" min="1" value="1">
+            <label for="averagesalary">Enter the Average Annual Lab Tech Salary:</label>
+            <input type="number" id="averagesalary" min="1" value="1">
+            <label for="workersperapc">Required Number of Lab Techs per APC:</label>
+            <input type="number" id="workersperapc" min="1" value="1">
+            <div class="button-container">
+                <button type="button" onclick="calculateOperatingCost()">Calculate Operating Cost</button>
+            </div>
+        </div>
+        <div class="column">
+            <h2>Cost Breakdown</h2>
+            <p>Labor Costs: $<span id="laborCosts"></span></p>
+            <p>OpEx Costs: $<span id="opExCosts"></span></p>
+            <p>Ownership Costs: $<span id="ownershipCosts"></span></p>
+        </div>
+        <div class="column">
+            <div id="pieChartContainer">
+                <canvas id="costsPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <h3>ROI Calculator</h3>
+    <div class="calculator-container">
+        <div class="column">
+            <label for="priceperapc">Software Price per Device per Year:</label>
+            <input type="number" id="priceperapc" min="1" value="10000">
+            <div class="button-container">
+                <button type="button" onclick="calculateROI()">Calculate ROI</button>
+            </div>
+        </div>
+        <div class="column">
+            <h2>Return on Investment Results</h2>
+            <p> ROI after 12 months: <span id="ROI"></span></p>
+            <p> Total Annual Savings: $<span id="annualcostsavings"></span></p>
+        </div>
+    </div>
+
+    <script>
+        var myChart;  // Variable to store the chart instance
+        var annualcost;  // Declare annualcost as a global variable
+        var laborCost;
+        var opExCost;
+        var ownershipCost;
+
+        function calculateOperatingCost() {
+            var selectedCounter = document.getElementById("counter").value;
+            var quantity = parseInt(document.getElementById("quantity").value);
+            var averagesalary = parseInt(document.getElementById("averagesalary").value);
+            var workersperapc = parseFloat(document.getElementById("workersperapc").value);
+
+            laborCost = averagesalary * workersperapc;
+
+            var operatingCost = 0;
+
+            // Define the operating cost for each particle counter
+            switch (selectedCounter) {
+                case "Climet 570":
+                    operatingCost = (laborCost / 0.85); // Replace with the actual operating cost
+                    break;
+                case "Climet 1070":
+                    operatingCost = (laborCost / 0.85); // Replace with the actual operating cost
+                    break;
+                case "Flowstar 5000":
+                    operatingCost = (laborCost / 0.85); // Replace with the actual operating cost
+                    break;
+                case "Aerotrak":
+                    operatingCost = (laborCost / 0.85); // Replace with the actual operating cost
+                    break;
+                case "Lassair III":
+                    operatingCost = (laborCost / 0.85); // Replace with the actual operating cost
+                    break;
+            }
+
+            // Calculate Total Operating Cost
+            var totalOperatingCost = operatingCost * quantity;
+
+            // Calculate Labor Costs, OpEx Costs, and Ownership Costs
+            laborCost = totalOperatingCost * 0.85;
+            opExCost = totalOperatingCost * 0.05;
+            ownershipCost = totalOperatingCost * 0.10;
+
+            // Set the global variable for later use in ROI calculation
+            annualcost = laborCost + opExCost + ownershipCost;
+
+            // Update the displayed values
+            document.getElementById("laborCosts").textContent = laborCost.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+            document.getElementById("opExCosts").textContent = opExCost.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+            document.getElementById("ownershipCosts").textContent = ownershipCost.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+
+            // Clear the existing chart if it exists
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            // Create and display the pie chart for cost breakdown
+            createPieChart(laborCost, opExCost, ownershipCost);
+        }
+
+        function createPieChart(laborCost, opExCost, ownershipCost) {
+            var ctx = document.getElementById("costsPieChart").getContext("2d");
+
+            myChart = new Chart(ctx, {
+                type: "pie",
+                data: {
+                    labels: ["Labor Costs", "OpEx Costs", "Ownership Costs"],
+                    datasets: [{
+                        data: [laborCost, opExCost, ownershipCost],
+                        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                },
+            });
+        }
+
+        function calculateROI() {
+            var pricePerAPC = parseFloat(document.getElementById("priceperapc").value);
+            var quantity = parseInt(document.getElementById("quantity").value);
+
+            var apcinvestment = pricePerAPC * quantity;
+
+            // Calculate the revised cost
+            var revisedlaborCost = laborCost - 5000
+            var revisedopExCost = opExCost - 5000
+            var revisedownership = ownershipCost - 10000
+
+            var revisedannualcost = revisedlaborCost + revisedopExCost + revisedownership;
+
+            // Calculate the total operating cost savings
+            var totaloperatingcostsavings = (annualcost - revisedannualcost);
+
+            // Calculate the ROI from money saved over spend 
+            var ROI = totaloperatingcostsavings * quantity / apcinvestment * 100;
+
+            // total annual cost savings
+            var annualcostsavings = quantity * (annualcost - revisedannualcost);
+
+            // Display the ROI after 12 months
+            document.getElementById("ROI").textContent = ROI.toFixed() + "%";
+            document.getElementById("annualcostsavings").textContent = annualcostsavings.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+        }
+    </script>
+
+</body>
+</html>
